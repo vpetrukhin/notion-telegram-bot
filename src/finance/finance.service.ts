@@ -1,51 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { NotionService } from 'nestjs-notion';
-import { SUM_PROPERTY_NAME, TITLE_PROPERTY_NAME } from './finance.constants';
-import { ConfigService } from '@nestjs/config';
+import { AddExpenseDto } from './expense.dto';
+import { ExpenseService } from './expense.service';
 
-interface resultItem {
-    title: string;
-    // category: string;
-    sum: number | null;
-}
+/**
+ * 
+ * [21.10.2023 в 20:02]
+Покупка Перекрёсток
+2 932,03 ₽
+МИР •• 7697
+Баланс: 1 767,92 ₽
+ * 
+ * 
+ */
 
 @Injectable()
 export class FinanceService {
-    expenseDBId: string;
+    constructor(private readonly expenseService: ExpenseService) {}
 
-    constructor(
-        private readonly notionService: NotionService,
-        private readonly configService: ConfigService,
-    ) {
-        this.expenseDBId = configService.get('NOTION_EXPENSE_DB_ID');
+    parseExpenseString(expenseString: string): AddExpenseDto {
+        const arr = expenseString.split('\n');
+
+        const date = arr[0].substring(1, 11);
+        const billNumber = arr[3].substring(7);
+        const sum = arr[2].substring(0, arr[2].length - 2).replaceAll(' ', '');
+        const title = arr[1].split(' ').slice(1).join(' ');
+
+        // @TODO: Переделать sum в number
+
+        return {
+            date,
+            billNumber,
+            sum,
+            title,
+        };
     }
 
-    async getExpenses() {
-        const res = await this.notionService.databases.query({
-            database_id: this.expenseDBId,
-        });
-        const results: resultItem[] = [];
-
-        for (const page of res.results) {
-            const title: string =
-                TITLE_PROPERTY_NAME in page.properties &&
-                page.properties[TITLE_PROPERTY_NAME].type === 'title'
-                    ? page.properties[TITLE_PROPERTY_NAME].title[0].plain_text
-                    : '';
-            const sum =
-                SUM_PROPERTY_NAME in page.properties &&
-                page.properties[SUM_PROPERTY_NAME].type === 'number'
-                    ? page.properties[SUM_PROPERTY_NAME].number
-                    : null;
-
-            const expense: resultItem = {
-                title,
-                sum,
-            };
-
-            results.push(expense);
-        }
-
-        return results;
+    addExpense(dto: AddExpenseDto) {
+        this.expenseService.addExpense(dto);
     }
 }

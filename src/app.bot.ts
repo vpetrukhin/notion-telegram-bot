@@ -1,6 +1,6 @@
 import { Context, Markup } from 'telegraf';
 import { AppService } from './app.service';
-import { Ctx, Hears, Start, Update } from 'nestjs-telegraf';
+import { Ctx, Hears, On, Start, Update } from 'nestjs-telegraf';
 import { FinanceService } from './finance/finance.service';
 
 @Update()
@@ -12,24 +12,33 @@ export class AppUpdate {
 
     @Start()
     async start(@Ctx() ctx: Context) {
-        await ctx.reply('Я живой!');
+        await ctx.reply('Выберите тип операции', Markup.keyboard(['Финансы']));
+    }
+
+    @Hears('Финансы')
+    async getFinance(@Ctx() ctx: Context) {
+        // const res = await this.financeService.getExpenses();
+        // await ctx.reply(res.map((e) => `${e.title}: ${e.sum}\n`).join(''));
         await ctx.reply(
-            'Я могу',
-            Markup.keyboard([
-                Markup.button.callback('финансы', 'finance'),
-                Markup.button.callback('Задачи', 'tasks'),
-            ]),
+            'Выберите действие',
+            Markup.keyboard(['Добавить расход']),
         );
     }
 
-    @Hears('финансы')
-    async getFinance(@Ctx() ctx: Context) {
-        const res = await this.financeService.getExpenses();
-        await ctx.reply(res.map((e) => `${e.title}: ${e.sum}\n`).join(''));
+    @Hears('Добавить расход')
+    async add(@Ctx() ctx: Context) {
+        await ctx.reply('Введите расход');
+    }
+
+    @On('text')
+    async getExpandMessage(@Ctx() { message }: Context) {
+        if ('text' in message) {
+            console.log(this.financeService.parseExpenseString(message.text));
+        }
     }
 
     @Hears('Задачи')
-    async getTasks(@Ctx() ctx: Context) {
+    async getTasks(@Ctx() ctx: Context): Promise<void> {
         await ctx.reply('tasks');
     }
 }

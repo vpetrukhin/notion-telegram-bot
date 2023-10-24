@@ -3,6 +3,7 @@ import { FinanceService } from './finance.service';
 import { NotionModule } from 'nestjs-notion';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getNotionConfig } from 'src/configs/notion.config';
+import { ExpenseService } from './expense.service';
 
 @Module({
     imports: [
@@ -13,7 +14,7 @@ import { getNotionConfig } from 'src/configs/notion.config';
             useFactory: getNotionConfig,
         }),
     ],
-    providers: [FinanceService],
+    providers: [FinanceService, ExpenseService],
     exports: [FinanceService],
 })
 export class FinanceModule {}

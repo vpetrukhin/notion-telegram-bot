@@ -14,11 +14,6 @@ import { FinanceModule } from './finance/finance.module';
             inject: [ConfigService],
             useFactory: getTelegrafOptions,
         }),
-        // NotionModule.forRootAsync({
-        //     imports: [ConfigModule],
-        //     inject: [ConfigService],
-        //     useFactory: getNotionConfig,
-        // }),
         FinanceModule,
     ],
     controllers: [],
