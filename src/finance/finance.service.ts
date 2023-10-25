@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { AddExpenseDto } from './expense.dto';
 import { ExpenseService } from './expense.service';
-
-/**
- * 
- * [21.10.2023 в 20:02]
-Покупка Перекрёсток
-2 932,03 ₽
-МИР •• 7697
-Баланс: 1 767,92 ₽
- * 
- * 
- */
+import {
+    EXPENSE_REGEXP,
+    NOT_VALID_EXPENSE_STRING_ERROR,
+} from './finance.constants';
 
 @Injectable()
 export class FinanceService {
     constructor(private readonly expenseService: ExpenseService) {}
+
+    validationExpenseString(expenseString: string): boolean {
+        // TODO: Поправить регулярку расхода
+        return EXPENSE_REGEXP.test(expenseString);
+    }
 
     parseExpenseString(expenseString: string): AddExpenseDto {
         const arr = expenseString.split('\n');
@@ -35,7 +33,16 @@ export class FinanceService {
         };
     }
 
-    addExpense(dto: AddExpenseDto) {
+    addExpense(expenseString: string) {
+        if (!this.validationExpenseString(expenseString)) {
+            throw new Error(NOT_VALID_EXPENSE_STRING_ERROR);
+        }
+        const dto = this.parseExpenseString(expenseString);
+
         this.expenseService.addExpense(dto);
+    }
+
+    public getExpensesList() {
+        return this.expenseService.getExpenses();
     }
 }

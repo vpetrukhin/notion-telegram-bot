@@ -4,6 +4,7 @@ import { NotionModule } from 'nestjs-notion';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getNotionConfig } from 'src/configs/notion.config';
 import { ExpenseService } from './expense.service';
+import { ExpenseCategoryService } from './expense-category.service';
 
 @Module({
     imports: [
@@ -14,7 +15,7 @@ import { ExpenseService } from './expense.service';
             useFactory: getNotionConfig,
         }),
     ],
-    providers: [FinanceService, ExpenseService],
+    providers: [FinanceService, ExpenseService, ExpenseCategoryService],
     exports: [FinanceService],
 })
 export class FinanceModule {}
