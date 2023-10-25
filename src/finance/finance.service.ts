@@ -22,10 +22,10 @@ export class FinanceService {
 
         const date = arr[0].substring(1, 11);
         const billNumber = arr[3].substring(7);
-        const sum = arr[2].substring(0, arr[2].length - 2).replaceAll(' ', '');
+        const sum = parseFloat(
+            arr[2].replace(/[^\d.,]/g, '').replace(',', '.'),
+        );
         const title = arr[1].split(' ').slice(1).join(' ');
-
-        // @TODO: Переделать sum в number
 
         return {
             date,

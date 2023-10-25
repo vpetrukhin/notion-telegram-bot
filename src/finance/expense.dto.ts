@@ -10,7 +10,7 @@ export interface AddExpenseDto {
     /**
      * Сумма
      */
-    sum: string;
+    sum: number;
     /**
      * Счет
      */
