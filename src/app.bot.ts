@@ -38,14 +38,25 @@ export class AppUpdate {
     @On('text')
     async getExpandMessage(@Ctx() ctx: Context) {
         try {
-            if ('text' in ctx.message) {
-                this.financeService.addExpense(ctx.message.text);
+            ctx.reply('Отправлен запрос на добавление расхода');
+            if ('text' in ctx.message && ctx.message.text) {
+                const newExpand = await this.financeService.addExpense(
+                    ctx.message.text,
+                );
+
+                if ('url' in newExpand) {
+                    ctx.reply(
+                        `✅ Расход добавлен успешно. Ссылка на запись в notion ${newExpand.url}`,
+                    );
+                }
             }
         } catch (e: unknown) {
             if (e instanceof Error) {
                 Logger.error(e.message, e.stack);
                 ctx.reply('🔴' + e.message);
             }
+        } finally {
+            this.start(ctx);
         }
     }
 

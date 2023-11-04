@@ -50,13 +50,7 @@ export class ExpenseService {
     }
 
     async addExpense(dto: AddExpenseDto) {
-        // console.log(dto);
-
-        // const category = await this.expenseCategoryService.getCategoryByText(
-        //     dto.billNumber,
-        // );
-
-        const newPage = await this.notionService.pages.create({
+        return this.notionService.pages.create({
             parent: {
                 database_id: this.expenseDBId,
             },
@@ -80,7 +74,5 @@ export class ExpenseService {
                 // Счет: category.results[0].id,
             },
         });
-
-        Logger.log(newPage);
     }
 }

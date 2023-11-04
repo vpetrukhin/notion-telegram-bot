@@ -39,7 +39,7 @@ export class FinanceService {
         }
         const dto = this.parseExpenseString(expenseString);
 
-        this.expenseService.addExpense(dto);
+        return this.expenseService.addExpense(dto);
     }
 
     public getExpensesList() {
